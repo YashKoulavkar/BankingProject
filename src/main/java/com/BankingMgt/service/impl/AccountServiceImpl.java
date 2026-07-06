@@ -7,7 +7,6 @@ import com.BankingMgt.repository.AccountRepository;
 import com.BankingMgt.repository.TransactionRepository;
 import com.BankingMgt.service.AccountService;
 import com.BankingMgt.service.SmsService;
-import jakarta.persistence.Id;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -29,7 +28,7 @@ public class AccountServiceImpl implements AccountService {
     // create acc
     @Override
     public Account createAccount(Account account) {
-        // १. save in DB
+        // 1. save in DB
         Account savedAccount = accountRepository.save(account);
 
         //  build msg
@@ -61,7 +60,7 @@ public class AccountServiceImpl implements AccountService {
         account.setBalance(account.getBalance().add(amount));
         Account updatedAccount = accountRepository.save(account);
 
-        // ३. ट्रान्झॅक्शन हिस्टरी सेव्ह करा (Builder पॅटर्न वापरून क्लीन कोड)
+        // 4. save transaction history
         Transaction txn = Transaction.builder()
                 .accountNumber(accountNumber)
                 .transactionType("DEPOSIT")
@@ -71,7 +70,7 @@ public class AccountServiceImpl implements AccountService {
                 .build();
         transactionRepository.save(txn);
 
-        // SMS पाठवणे
+        // SMS send
         String smsMessage = String.format("Account %s Credited with INR %s. Balance: INR %s.",
                 accountNumber, amount, updatedAccount.getBalance());
         smsService.sendSms(updatedAccount.getPhoneNumber(), smsMessage);
@@ -93,7 +92,7 @@ public class AccountServiceImpl implements AccountService {
         account.setBalance(account.getBalance().subtract(amount));
         Account updatedAccount = accountRepository.save(account);
 
-        // ४. save transaltion history
+        // 4. save transaltion history
         Transaction txn = Transaction.builder()
                 .accountNumber(accountNumber)
                 .transactionType("WITHDRAW")
@@ -144,16 +143,6 @@ public class AccountServiceImpl implements AccountService {
         accountRepository.delete(account);
     }
 
-
-
-    /*// get account
-    @Override
-    public Account getAccount(String accountNumber) {
-        return accountRepository.findByAccountNumber(accountNumber)
-                .orElseThrow(() -> new AccountException("Account number " + accountNumber + " does not exist!"));
-        // RuntimeException ऐवजी AccountException वापरा
-    }
-*/
 
     // 💡 NEW HELPER METHOD: Verifies if the authenticated token holder owns the account
     private void verifyUserAccess(String accountNumber) {

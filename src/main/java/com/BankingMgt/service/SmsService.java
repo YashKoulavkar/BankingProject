@@ -18,7 +18,7 @@ public class SmsService {
     @Value("${twilio.phone.number}")
     private String fromPhoneNumber;
 
-    // प्रोजेक्ट चालू झाल्यावर Twilio ला ऑटोमॅटिकली इनिशियलाइज करण्यासाठी
+    // for calling automatically after the bean is created and properties are set
     @PostConstruct
     public void initTwilio() {
         Twilio.init(accountSid, authToken);
@@ -28,9 +28,9 @@ public class SmsService {
     public void sendSms(String toPhoneNumber, String messageBody) {
         try {
             Message.creator(
-                    new PhoneNumber(toPhoneNumber), // कोणाला पाठवायचा (युझरचा नंबर)
-                    new PhoneNumber(fromPhoneNumber), // कोणाकडून जाणार (Twilio नंबर)
-                    messageBody // मेसेज काय पाठवायचा
+                    new PhoneNumber(toPhoneNumber),
+                    new PhoneNumber(fromPhoneNumber),
+                    messageBody // send msg
             ).create();
             System.out.println("SMS Sent Successfully to " + toPhoneNumber);
         } catch (Exception e) {

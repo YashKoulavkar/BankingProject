@@ -82,7 +82,7 @@ public class AccountController {
         String sourceAccount = (String) request.get("sourceAccountNumber");
         String targetAccount = (String) request.get("targetAccountNumber");
 
-        // String कडून BigDecimal मध्ये सुरक्षित कन्व्हर्ट करणे
+        // convert string into big decimal
         BigDecimal amount = new BigDecimal(request.get("amount").toString());
 
         accountService.transferFunds(sourceAccount, targetAccount, amount);
